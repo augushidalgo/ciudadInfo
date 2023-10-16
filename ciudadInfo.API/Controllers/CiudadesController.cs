@@ -9,12 +9,13 @@ namespace ciudadInfo.API.Controllers
         [HttpGet]
         public JsonResult GetCiudades()
         {
+            return new JsonResult(CiudadesDataStore.Actual.Ciudades);
+        }
+        [HttpGet("{id}")]
+        public JsonResult GetCiudad(int id)
+        {
             return new JsonResult(
-                new List<object>
-                {
-                    new {id = 1, nombre = "Estelí"},
-                    new {id = 2, nombre = "Ocotal"}
-                });
+                CiudadesDataStore.Actual.Ciudades.FirstOrDefault(c => c.Id == id));
         }
     }
 }

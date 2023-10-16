@@ -5,6 +5,7 @@ namespace ciudadInfo.API
     public class CiudadesDataStore
     {
         public List<CiudadDto> Ciudades { get; set; }
+        public static CiudadesDataStore Actual { get; } = new CiudadesDataStore();
 
         public CiudadesDataStore()
         {
@@ -28,7 +29,7 @@ namespace ciudadInfo.API
                 Nombre = "Jinotega",
                 Descripcion = "Ciudad de montañas del centro de Nicaragua"
             }
-        }
+        };
             
         }
     }
