@@ -34,7 +34,7 @@ namespace ciudadInfo.API.Controllers
             if (puntoDeInteres == null)
             {
                 return NotFound();
-            }
+            }   
             return Ok(puntoDeInteres);
         }
     }
