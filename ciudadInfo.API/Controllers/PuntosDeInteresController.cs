@@ -1,5 +1,6 @@
 ﻿using ciudadInfo.API.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ciudadInfo.API.Controllers
@@ -68,6 +69,71 @@ namespace ciudadInfo.API.Controllers
                     puntoDeInteresId = finalPuntoDeInteres.Id
                 },
                 finalPuntoDeInteres);
+        }
+
+        [HttpPut("{puntodeinteresid}")]
+        public ActionResult ActualizarPuntoDeInteres(int ciudadId, 
+            int puntoDeInteresId
+            , PuntoDeInteresParaActualizarDto puntoDeInteres)
+        {
+            var ciudad = CiudadesDataStore.Actual.Ciudades.FirstOrDefault(c => c.Id == ciudadId);
+            if (ciudad == null)
+            {
+                return NotFound();
+            }
+
+            // encontrar el punto de interes
+            var puntoDeInteresDelAlmacen = ciudad.PuntosDeInteres.FirstOrDefault(c => c.Id == puntoDeInteresId);
+            if (puntoDeInteresDelAlmacen == null)
+            {
+                return NotFound();
+            }
+
+            puntoDeInteresDelAlmacen.Nombre = puntoDeInteres.Nombre;
+            puntoDeInteresDelAlmacen.Descripcion = puntoDeInteres.Descripcion;
+
+            return NoContent();
+        }
+        [HttpPatch("{puntodeinteresid}")]
+        public ActionResult ActualizacionParcialPuntoDeInteres(
+            int ciudadId, int puntoDeInteresId,
+            JsonPatchDocument<PuntoDeInteresParaActualizarDto> patchDocument)
+        {
+            var ciudad = CiudadesDataStore.Actual.Ciudades.FirstOrDefault(c => c.Id == ciudadId);
+            if (ciudad == null)
+            {
+                return NotFound();
+            }
+
+            // encontrar el punto de interes
+            var puntoDeInteresDelAlmacen = ciudad.PuntosDeInteres.FirstOrDefault(c => c.Id == puntoDeInteresId);
+            if (puntoDeInteresDelAlmacen == null)
+            {
+                return NotFound();
+            }
+
+            var puntoDeInteresAParchear =
+                new PuntoDeInteresParaActualizarDto()
+                {
+                    Nombre = puntoDeInteresDelAlmacen.Nombre,
+                    Descripcion = puntoDeInteresDelAlmacen.Descripcion
+                };
+            patchDocument.ApplyTo(puntoDeInteresAParchear, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if(!TryValidateModel(puntoDeInteresAParchear))
+            {
+                return BadRequest(ModelState);
+            }
+
+            puntoDeInteresDelAlmacen.Nombre = puntoDeInteresAParchear.Nombre;
+            puntoDeInteresDelAlmacen.Descripcion = puntoDeInteresAParchear.Descripcion;
+
+            return NoContent();
         }
     }
 }
